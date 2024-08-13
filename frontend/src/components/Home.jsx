@@ -10,7 +10,7 @@ const Home = () => {
   useGetSuggestedUsers();
   return (
     <div className="flex bg-gradient-to-r from-slate-100 to-gray-100">
-      <div className="flex-grow">
+      <div className="flex-grow px-20">
         <Feed />
         <Outlet />
       </div>
