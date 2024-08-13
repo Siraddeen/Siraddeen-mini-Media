@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 const corsOptions = {
-  origin: "https://mini-social-media-8dik.onrender.com",
+  origin: process.env.url2,
   credentials: true,
 };
 app.use(cors(corsOptions));

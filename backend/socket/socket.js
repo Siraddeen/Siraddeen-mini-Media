@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://mini-social-media-8dik.onrender.com",
+    origin: process.env.url2,
     methods: ["GET", "POST"],
   },
 });
