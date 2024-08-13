@@ -27,7 +27,7 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://mini-social-media-8dik.onrender.com/api/v1/user/login",
+        "https://siraddeen-mini-media.onrender.com/api/v1/user/login",
         input,
         {
           headers: {

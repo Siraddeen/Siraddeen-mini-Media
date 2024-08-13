@@ -49,7 +49,7 @@ const EditProfile = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://mini-social-media-8dik.onrender.com/api/v1/user/profile/edit",
+        "https://siraddeen-mini-media.onrender.com/api/v1/user/profile/edit",
         formData,
         {
           headers: {

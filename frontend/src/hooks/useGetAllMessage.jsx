@@ -11,7 +11,7 @@ const useGetAllMessage = () => {
     const fetchAllMessage = async () => {
       try {
         const res = await axios.get(
-          `https://mini-social-media-8dik.onrender.com/api/v1/message/all/${selectedUser?._id}`,
+          `https://siraddeen-mini-media.onrender.com/api/v1/message/all/${selectedUser?._id}`,
           { withCredentials: true }
         );
         if (res.data.success) {

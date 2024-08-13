@@ -20,7 +20,7 @@ const ChatPage = () => {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `https://mini-social-media-8dik.onrender.com/api/v1/message/send/${receiverId}`,
+        `https://siraddeen-mini-media.onrender.com/api/v1/message/send/${receiverId}`,
         { textMessage },
         {
           headers: {

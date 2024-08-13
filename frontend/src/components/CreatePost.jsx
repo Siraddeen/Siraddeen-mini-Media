@@ -36,7 +36,7 @@ const CreatePost = ({ open, setOpen }) => {
     try {
       setLoading(true);
       const res = await axios.post(
-        "https://mini-social-media-8dik.onrender.com/api/v1/post/addpost",
+        "https://siraddeen-mini-media.onrender.com/api/v1/post/addpost",
         formData,
         {
           headers: {

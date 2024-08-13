@@ -9,7 +9,7 @@ const useGetAllPost = () => {
     const fetchAllPost = async () => {
       try {
         const res = await axios.get(
-          "https://mini-social-media-8dik.onrender.com/api/v1/post/all",
+          "https://siraddeen-mini-media.onrender.com/api/v1/post/all",
           { withCredentials: true }
         );
         if (res.data.success) {
