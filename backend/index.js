@@ -35,7 +35,23 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
-server.listen(PORT, () => {
-  connectDB();
-  console.log(`Server listen at port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB(); // ⬅️ WAIT here
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
+
+
+
+// server.listen(PORT, () => {
+//   connectDB();
+//   console.log(`Server listen at port ${PORT}`);
+// });
