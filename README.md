@@ -1,5 +1,13 @@
 # Mini Social Media Platform
 
+> Demo user account created for showcasing features (sample avatar)
+
+<div style="display: flex; gap: 12px; justify-content: center;">
+  <img src="https://github.com/user-attachments/assets/f79d5088-bf15-4225-a00d-17139b5923a7" width="48%" />
+  <img src="https://github.com/user-attachments/assets/2a0c6a70-7cd8-4505-aa47-b9e78953ddd6" width="48%" />
+</div>
+.
+
 A full-stack mini social media web application built to gain hands-on experience in real-world application development, API integration, authentication, deployment, and production debugging.
 
 🔗 **Live Demo:** https://siraddeen-mini-media.onrender.com  
