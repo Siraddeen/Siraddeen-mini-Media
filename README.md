@@ -13,7 +13,7 @@ This project is a mini social media platform where users can:
 
 - Register and log in securely  
 - Create and view posts  
-- Interact with content  
+- Interact with content (JPEG images and MP4 videos)
 - Experience a real production-deployed full-stack application  
 
 The primary focus of this project was **learning full-stack system behavior and real production debugging**, rather than just building features.
@@ -27,7 +27,8 @@ The primary focus of this project was **learning full-stack system behavior and 
 - Redux  
 - JavaScript  
 - HTML5  
-- CSS3  
+- CSS3
+- Tailwind
 
 ### Backend
 - Node.js  
