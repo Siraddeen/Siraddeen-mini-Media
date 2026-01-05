@@ -6,7 +6,7 @@
   "type": "module",
    "engines": {
     "node": "20.x"
-  }
+  },
   "scripts": {
     "dev": "nodemon backend/index.js",
     "build":"npm install && npm install --prefix frontend && npm run build --prefix frontend",
