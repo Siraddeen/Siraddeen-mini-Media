@@ -37,7 +37,8 @@ app.get("*", (req, res) => {
 
 const startServer = async () => {
   try {
-    await connectDB(); // ⬅️ WAIT here
+    await connectDB(); // ⬅️ WAIT for MongoDB first
+
     server.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
@@ -48,6 +49,7 @@ const startServer = async () => {
 };
 
 startServer();
+
 
 
 
