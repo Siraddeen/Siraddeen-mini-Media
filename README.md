@@ -9,7 +9,7 @@ A full-stack mini social media web application built to gain hands-on experience
 
 ## 📌 Project Overview
 
-This project is a mini social media platform where users can:
+This project is a mini social media platform where users can :
 
 - Register and log in securely  
 - Create and view posts  
