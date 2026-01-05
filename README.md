@@ -28,6 +28,32 @@ The primary focus of this project was **learning full-stack system behavior and 
 
 ---
 
+### 🐛 Production Debugging Experience
+During deployment and real-world usage, this project encountered multiple production-level issues. These were intentionally resolved in a live environment to gain hands-on experience with real system failures rather than local-only development.
+
+#### Key issues handled:
+
+- Null reference errors caused by orphaned MongoDB documents after manual database edits
+
+- Authentication inconsistencies across browsers due to cookie/session behavior
+
+- MongoDB Atlas connectivity and timeout issues in a cloud deployment environment
+
+- Frontend crashes caused by missing relational data (e.g., deleted users referenced by posts)
+
+#### Resolutions applied:
+
+- Added defensive null checks and safe guards in both frontend and backend
+
+- Implemented backend-side validation to prevent invalid or stale references
+
+- Cleaned orphaned database records and stabilized data relationships
+
+- Improved login/session handling to ensure consistent behavior across browsers
+
+- Used production logs and systematic debugging to trace root causes
+
+
 ## 🛠️ Tech Stack
 
 ### Frontend
