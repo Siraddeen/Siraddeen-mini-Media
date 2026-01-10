@@ -42,7 +42,7 @@ export const addNewPost = async (req, res) => {
       });
     }
 
-    /* ---------- UNSUPPORTED TYPE ---------- */
+    /* ---------- UNSUPPORTED FILE ---------- */
     else {
       return res.status(400).json({
         message: "Unsupported file type",
@@ -52,7 +52,7 @@ export const addNewPost = async (req, res) => {
 
     const post = await Post.create({
       caption,
-      image: cloudResponse.secure_url,
+      image: cloudResponse.secure_url, // kept as-is for backward compatibility
       author: authorId,
     });
 
@@ -71,18 +71,15 @@ export const addNewPost = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      message: "Internal server error",
-      success: false,
-    });
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 };
 
-/* ===================== REST OF YOUR CODE (UNCHANGED) ===================== */
-
+/* ===================== GET ALL POSTS ===================== */
 export const getAllPost = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 })
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
       .populate({ path: "author", select: "username profilePicture" })
       .populate({
         path: "comments",
@@ -99,9 +96,11 @@ export const getAllPost = async (req, res) => {
   }
 };
 
+/* ===================== GET USER POSTS ===================== */
 export const getUserPost = async (req, res) => {
   try {
     const authorId = req.id;
+
     const posts = await Post.find({ author: authorId })
       .sort({ createdAt: -1 })
       .populate({
@@ -123,6 +122,7 @@ export const getUserPost = async (req, res) => {
   }
 };
 
+/* ===================== LIKE POST ===================== */
 export const likePost = async (req, res) => {
   try {
     const userId = req.id;
@@ -154,6 +154,135 @@ export const likePost = async (req, res) => {
     console.log(error);
   }
 };
+
+/* ===================== DISLIKE POST ===================== */
+export const dislikePost = async (req, res) => {
+  try {
+    const userId = req.id;
+    const postId = req.params.id;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found", success: false });
+
+    await post.updateOne({ $pull: { likes: userId } });
+
+    return res.status(200).json({ message: "Post disliked", success: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* ===================== ADD COMMENT ===================== */
+export const addComment = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.id;
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ message: "text is required", success: false });
+    }
+
+    const comment = await Comment.create({
+      text,
+      author: userId,
+      post: postId,
+    });
+
+    await comment.populate({
+      path: "author",
+      select: "username profilePicture",
+    });
+
+    const post = await Post.findById(postId);
+    post.comments.push(comment._id);
+    await post.save();
+
+    return res.status(201).json({ message: "Comment Added", comment, success: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* ===================== GET COMMENTS ===================== */
+export const getCommentsOfPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    const comments = await Comment.find({ post: postId }).populate(
+      "author",
+      "username profilePicture"
+    );
+
+    return res.status(200).json({ success: true, comments });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* ===================== DELETE POST ===================== */
+export const deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const authorId = req.id;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found", success: false });
+
+    if (post.author.toString() !== authorId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await Post.findByIdAndDelete(postId);
+
+    const user = await User.findById(authorId);
+    user.posts = user.posts.filter((id) => id.toString() !== postId);
+    await user.save();
+
+    await Comment.deleteMany({ post: postId });
+
+    return res.status(200).json({ success: true, message: "Post deleted" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+/* ===================== BOOKMARK POST ===================== */
+export const bookmarkPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const authorId = req.id;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found", success: false });
+
+    const user = await User.findById(authorId);
+
+    if (user.bookmarks.includes(post._id)) {
+      await user.updateOne({ $pull: { bookmarks: post._id } });
+      return res.status(200).json({
+        type: "unsaved",
+        message: "Post removed from bookmark",
+        success: true,
+      });
+    } else {
+      await user.updateOne({ $addToSet: { bookmarks: post._id } });
+      return res.status(200).json({
+        type: "saved",
+        message: "Post bookmarked",
+        success: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+// // ==================================================================================================================================
+
+
 // import sharp from "sharp";
 // import cloudinary from "../utils/cloudinary.js";
 // import { Post } from "../models/post.model.js";
@@ -310,108 +439,108 @@ export const likePost = async (req, res) => {
 
 //     }
 // }
-export const addComment = async (req,res) =>{
-    try {
-        const postId = req.params.id;
-        const commentKrneWalaUserKiId = req.id;
+// export const addComment = async (req,res) =>{
+//     try {
+//         const postId = req.params.id;
+//         const commentKrneWalaUserKiId = req.id;
 
-        const {text} = req.body;
+//         const {text} = req.body;
 
-        const post = await Post.findById(postId);
+//         const post = await Post.findById(postId);
 
-        if(!text) return res.status(400).json({message:'text is required', success:false});
+//         if(!text) return res.status(400).json({message:'text is required', success:false});
 
-        const comment = await Comment.create({
-            text,
-            author:commentKrneWalaUserKiId,
-            post:postId
-        })
+//         const comment = await Comment.create({
+//             text,
+//             author:commentKrneWalaUserKiId,
+//             post:postId
+//         })
 
-        await comment.populate({
-            path:'author',
-            select:"username profilePicture"
-        });
+//         await comment.populate({
+//             path:'author',
+//             select:"username profilePicture"
+//         });
         
-        post.comments.push(comment._id);
-        await post.save();
+//         post.comments.push(comment._id);
+//         await post.save();
 
-        return res.status(201).json({
-            message:'Comment Added',
-            comment,
-            success:true
-        })
+//         return res.status(201).json({
+//             message:'Comment Added',
+//             comment,
+//             success:true
+//         })
 
-    } catch (error) {
-        console.log(error);
-    }
-};
-export const getCommentsOfPost = async (req,res) => {
-    try {
-        const postId = req.params.id;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+// export const getCommentsOfPost = async (req,res) => {
+//     try {
+//         const postId = req.params.id;
 
-        const comments = await Comment.find({post:postId}).populate('author', 'username profilePicture');
+//         const comments = await Comment.find({post:postId}).populate('author', 'username profilePicture');
 
-        if(!comments) return res.status(404).json({message:'No comments found for this post', success:false});
+//         if(!comments) return res.status(404).json({message:'No comments found for this post', success:false});
 
-        return res.status(200).json({success:true,comments});
+//         return res.status(200).json({success:true,comments});
 
-    } catch (error) {
-        console.log(error);
-    }
-}
-export const deletePost = async (req,res) => {
-    try {
-        const postId = req.params.id;
-        const authorId = req.id;
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+// export const deletePost = async (req,res) => {
+//     try {
+//         const postId = req.params.id;
+//         const authorId = req.id;
 
-        const post = await Post.findById(postId);
-        if(!post) return res.status(404).json({message:'Post not found', success:false});
+//         const post = await Post.findById(postId);
+//         if(!post) return res.status(404).json({message:'Post not found', success:false});
 
-        // check if the logged-in user is the owner of the post
-        if(post.author.toString() !== authorId) return res.status(403).json({message:'Unauthorized'});
+//         // check if the logged-in user is the owner of the post
+//         if(post.author.toString() !== authorId) return res.status(403).json({message:'Unauthorized'});
 
-        // delete post
-        await Post.findByIdAndDelete(postId);
+//         // delete post
+//         await Post.findByIdAndDelete(postId);
 
-        // remove the post id from the user's post
-        let user = await User.findById(authorId);
-        user.posts = user.posts.filter(id => id.toString() !== postId);
-        await user.save();
+//         // remove the post id from the user's post
+//         let user = await User.findById(authorId);
+//         user.posts = user.posts.filter(id => id.toString() !== postId);
+//         await user.save();
 
-        // delete associated comments
-        await Comment.deleteMany({post:postId});
+//         // delete associated comments
+//         await Comment.deleteMany({post:postId});
 
-        return res.status(200).json({
-            success:true,
-            message:'Post deleted'
-        })
+//         return res.status(200).json({
+//             success:true,
+//             message:'Post deleted'
+//         })
 
-    } catch (error) {
-        console.log(error);
-    }
-}
-export const bookmarkPost = async (req,res) => {
-    try {
-        const postId = req.params.id;
-        const authorId = req.id;
-        const post = await Post.findById(postId);
-        if(!post) return res.status(404).json({message:'Post not found', success:false});
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+// export const bookmarkPost = async (req,res) => {
+//     try {
+//         const postId = req.params.id;
+//         const authorId = req.id;
+//         const post = await Post.findById(postId);
+//         if(!post) return res.status(404).json({message:'Post not found', success:false});
         
-        const user = await User.findById(authorId);
-        if(user.bookmarks.includes(post._id)){
-            // already bookmarked -> remove from the bookmark
-            await user.updateOne({$pull:{bookmarks:post._id}});
-            await user.save();
-            return res.status(200).json({type:'unsaved', message:'Post removed from bookmark', success:true});
+//         const user = await User.findById(authorId);
+//         if(user.bookmarks.includes(post._id)){
+//             // already bookmarked -> remove from the bookmark
+//             await user.updateOne({$pull:{bookmarks:post._id}});
+//             await user.save();
+//             return res.status(200).json({type:'unsaved', message:'Post removed from bookmark', success:true});
 
-        }else{
-            // bookmark krna pdega
-            await user.updateOne({$addToSet:{bookmarks:post._id}});
-            await user.save();
-            return res.status(200).json({type:'saved', message:'Post bookmarked', success:true});
-        }
+//         }else{
+//             // bookmark krna pdega
+//             await user.updateOne({$addToSet:{bookmarks:post._id}});
+//             await user.save();
+//             return res.status(200).json({type:'saved', message:'Post bookmarked', success:true});
+//         }
 
-    } catch (error) {
-        console.log(error);
-    }
-}
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
