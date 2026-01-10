@@ -35,25 +35,11 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
-// const startServer = async () => {
-//   try {
-//     await connectDB(); // ⬅️ WAIT for MongoDB first
-
-//     server.listen(PORT, () => {
-//       console.log(`Server running on port ${PORT}`);
-//     });
-//   } catch (error) {
-//     console.error("Failed to start server:", error);
-//     process.exit(1);
-//   }
-// };
-
-// startServer();
 
 
-
+await connectDB();   // final resolve i guess
 
 server.listen(PORT, () => {
-  connectDB();
+  // connectDB();
   console.log(`Server listen at port ${PORT}`);
 });
